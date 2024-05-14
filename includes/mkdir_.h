@@ -24,4 +24,10 @@
 
 # define MAX 1024
 
+typedef struct  s_thread_args {
+    int     dirfd;
+    char    dir_name[MAX];
+    mode_t  mode;
+}               ThreadArgs;
+
 #endif
