@@ -9,8 +9,9 @@
 /* ************************************************************************** */
 
 #include "bases.h"
+#include "commands.h"
 
-int find_cmd(char **cmd, int size) {
+int find_cmd(int size, char **cmd) {
 
     int is_user_exit;
 
@@ -21,7 +22,7 @@ int find_cmd(char **cmd, int size) {
     } else if (strcmp(cmd[0], CD_CMD) == 0) {
         printf("cd input\n");
     } else if (strcmp(cmd[0], MKDIR_CMD) == 0) {
-        printf("mkdir input\n");
+        mkdir_(size, cmd);
     } else if (strcmp(cmd[0], CAT_CMD) == 0) {
         printf("cat input\n");
     } else if (strcmp(cmd[0], CHMOD_CMD) == 0) {
