@@ -16,7 +16,6 @@ int find_cmd(int size, char **cmd) {
     int is_user_exit;
 
     is_user_exit = 0;
-    printf("size : %d\n", size);
     if (strcmp(cmd[0], LS_CMD) == 0) {
         printf("ls input\n");
     } else if (strcmp(cmd[0], CD_CMD) == 0) {
