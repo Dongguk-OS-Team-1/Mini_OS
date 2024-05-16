@@ -13,4 +13,7 @@
 
 void mkdir_(int argc, char *argv[]);
 
+void cd_(int argc, char* argv[]);
+void  cat_(int argc, char* argv[]);
+
 #endif
