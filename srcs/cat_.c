@@ -46,7 +46,7 @@ void  cat_(int argc, char* argv[]) {
 			}
 			else {
 				while ((ch = fgetc(stdin)) != EOF) {
-					fputs(ch, file);
+					fputc(ch, file);
 				}
 				fclose(file);
 			}

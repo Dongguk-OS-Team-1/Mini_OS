@@ -9,8 +9,8 @@ void  cd_(int argc, char* argv[]) {
         // '/' 루트 디렉토리로 이동
         if (strcmp(argv[1], "/") == 0) {
             if (chdir("/") != 0) {
-                error_detect_cd();
-                return 1;
+                error_detect();
+                return ;
             }
         }
         // '.' 현재 디렉토리로 이동
@@ -18,29 +18,29 @@ void  cd_(int argc, char* argv[]) {
         // '..' 상위 디렉토리로 이동
         else if (strcmp(argv[1], "..") == 0) {
             if (chdir("..") != 0) {
-                error_detect_cd();
-                    return 1;
+                error_detect();
+                    return ;
             }
         }
         //해당 디렉토리로 이동
         else {
             if (chdir(argv[1]) != 0) {
-                error_detect_cd();
-                    return 1;
+                error_detect();
+                    return ;
             }
         }
     }
     // '~' or ' ' 홈 디렉토리로 이동
     else if (argc == 1 || (argc == 2 && strcmp(argv[1], "~") == 0)) {
         if (chdir(getenv("HOME")) != 0) {
-            error_detect_cd();
-            return 1;
+            error_detect();
+            return ;
         }
     }
      
     else {
         fprintf(stderr, "usage: cd directory_name ...\n");
-        return 1;
+        return ;
     }
 }
 
