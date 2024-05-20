@@ -3,8 +3,8 @@ CFLAGS = -Wall -Wextra -Werror -Wno-deprecated-declarations
 NAME = mini_os
 INCLUDES = ./includes
 SRCS = ./srcs/
-HEADER = bases.h commands.h mkdir_.h
-SRC = $(SRCS)mini_os.c $(SRCS)bases.c ${SRCS}mkdir_.c
+HEADER = bases.h commands.h mkdir_.h find_.h
+SRC = $(SRCS)mini_os.c $(SRCS)bases.c ${SRCS}mkdir_.c ${SRCS}find_.c
 OBJS = $(SRC:.c=.o)
 
 all: $(NAME)
