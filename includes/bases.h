@@ -29,6 +29,7 @@
 # define GREP_CMD   "grep"
 # define CP_CMD     "cp"
 # define TOUCH_CMD  "touch"
+# define FIND_CMD   "find"
 
 int   find_cmd(int size, char **cmd);
 int   parsing_cmd(char *target, char **ret);
@@ -36,5 +37,6 @@ void  make_lower_case_word(char *target);
 void  init_1_dim_char(char *target, int size);
 void  init_2_dim_char(char **target, int size);
 void  clear_buffer(void);
+int   is_absolute_path(const char *path);
 
 #endif

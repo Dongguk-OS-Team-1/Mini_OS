@@ -32,6 +32,8 @@ int find_cmd(int size, char **cmd) {
         printf("cp input\n");
     } else if (strcmp(cmd[0], TOUCH_CMD) == 0) {
         printf("touch input\n");
+    } else if (strcmp(cmd[0], FIND_CMD) == 0) {
+        find_(size, cmd);
     } else if (strcmp(cmd[0], EXIT_CMD) == 0) {
         is_user_exit = 1;
     } else
@@ -91,3 +93,6 @@ void clear_buffer(void) {
     return ;
 }
 
+int is_absolute_path(const char *path) {
+    return (path[0] == '/');
+}
