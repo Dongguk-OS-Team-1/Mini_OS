@@ -93,10 +93,8 @@ void  cat_(int argc, char* argv[]) {
 					printf("%s", lines);
 				}
 				fclose(file);
-				printf("\n");
 			}
 			i++;
-
 		}
 
 	}
@@ -119,7 +117,6 @@ void  cat_(int argc, char* argv[]) {
 					printf("%s", lines);
 				}
 				fclose(file);
-				printf("\n");
 			}
 			i++;
 		}
