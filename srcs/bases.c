@@ -19,11 +19,11 @@ int find_cmd(int size, char **cmd) {
     if (strcmp(cmd[0], LS_CMD) == 0) {
         printf("ls input\n");
     } else if (strcmp(cmd[0], CD_CMD) == 0) {
-        printf("cd input\n");
+        cd_(size, cmd);
     } else if (strcmp(cmd[0], MKDIR_CMD) == 0) {
         mkdir_(size, cmd);
     } else if (strcmp(cmd[0], CAT_CMD) == 0) {
-        printf("cat input\n");
+        cat_(size, cmd);
     } else if (strcmp(cmd[0], CHMOD_CMD) == 0) {
         printf("chmod input\n");
     } else if (strcmp(cmd[0], GREP_CMD) == 0) {

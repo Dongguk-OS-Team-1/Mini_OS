@@ -10,6 +10,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <sys/syscall.h>
+# include <signal.h>
 
 
 #define MAX_LINE_LENGTH 1024
