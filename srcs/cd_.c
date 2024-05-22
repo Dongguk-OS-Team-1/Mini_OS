@@ -6,23 +6,23 @@ void    error_detect(void);
 void  cd_(int argc, char* argv[]) {
 
     if (argc == 2) {
-        // '/' 루트 디렉토리로 이동
+        // Change to root directory
         if (strcmp(argv[1], "/") == 0) {
             if (chdir("/") != 0) {
                 error_detect();
                 return ;
             }
         }
-        // '.' 현재 디렉토리로 이동
+        // '.' Change to current directory
         else if (strcmp(argv[1], ".") == 0) {   }
-        // '..' 상위 디렉토리로 이동
+        // '..' Change to parent directory
         else if (strcmp(argv[1], "..") == 0) {
             if (chdir("..") != 0) {
                 error_detect();
                     return ;
             }
         }
-        //해당 디렉토리로 이동
+        //Change directory based on the provided path
         else {
             if (chdir(argv[1]) != 0) {
                 error_detect();
@@ -30,7 +30,7 @@ void  cd_(int argc, char* argv[]) {
             }
         }
     }
-    // '~' or ' ' 홈 디렉토리로 이동
+    // '~' or ' ' Change to home directory
     else if (argc == 1 || (argc == 2 && strcmp(argv[1], "~") == 0)) {
         if (chdir(getenv("HOME")) != 0) {
             error_detect();
