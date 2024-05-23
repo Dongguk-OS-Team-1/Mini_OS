@@ -390,10 +390,6 @@ mode_t convert_mode_str_to_oct(const char* target) {
     return (result);
 }
 
-int is_absolute_path(const char *path) {
-    return (path[0] == '/');
-}
-
 void error_detect(void) {
     switch (errno) {
         case EEXIST:
