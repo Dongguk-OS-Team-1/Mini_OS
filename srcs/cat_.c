@@ -53,7 +53,7 @@ void  cat_(int argc, char* argv[]) {
 
 
 	// Parsing options using getopt()
-	while ((returned_opt = getopt(argc, argv, "n")) != -1) {
+	while ((returned_opt = getopt(argc, argv, "n:")) != -1) 
 		switch (returned_opt) {
 		case 'n':
 			n_flag = 1;
@@ -63,7 +63,7 @@ void  cat_(int argc, char* argv[]) {
 			fprintf(stderr, "usage: cat [option] file_name \n");
 			return;
 		}
-	}
+	
 
 	if (*argv == NULL) {
 		fprintf(stderr, "usage: cat [options] file_name\n");
@@ -74,7 +74,7 @@ void  cat_(int argc, char* argv[]) {
 
 	//	-n option
 	else if (n_flag) {
-		i = optind;
+		i = 2;
 		while (argv[i] != NULL) {
 			line_number = 1;
 			char* filename = argv[i];
@@ -100,7 +100,7 @@ void  cat_(int argc, char* argv[]) {
 	}
 	// no option
 	else {
-		i = optind;
+		i = 1;
 		while (argv[i] != NULL) {
 			char* filename = argv[i];
 			FILE* file = fopen(filename, "r");
