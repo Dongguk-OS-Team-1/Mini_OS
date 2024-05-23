@@ -17,7 +17,8 @@ int find_cmd(int size, char **cmd) {
 
     is_user_exit = 0;
     if (strcmp(cmd[0], LS_CMD) == 0) {
-        printf("ls input\n");
+        printf("ls input\n"); // ls 함수호출 
+	      list_directory(size, cmd);
     } else if (strcmp(cmd[0], CD_CMD) == 0) {
         cd_(size, cmd);
     } else if (strcmp(cmd[0], MKDIR_CMD) == 0) {
@@ -25,7 +26,6 @@ int find_cmd(int size, char **cmd) {
     } else if (strcmp(cmd[0], CAT_CMD) == 0) {
         cat_(size, cmd);
     } else if (strcmp(cmd[0], CHMOD_CMD) == 0) {
-        printf("chmod input\n");
         chmod_(size, cmd);
     } else if (strcmp(cmd[0], GREP_CMD) == 0) {
         printf("grep input\n");
@@ -85,15 +85,15 @@ void init_1_dim_char(char *target, int size) {
 }
 
 void init_2_dim_char(char **target, int size) {
-
+  
     for (int i = 0; i < size; i++)
         *(target + i) = 0;
-
+  
     return ;
 }
 
 void clear_buffer(void) {
-
+  
     while (getchar() != '\n');
 
     return ;
