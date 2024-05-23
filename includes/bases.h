@@ -11,9 +11,9 @@
 #ifndef BASES_H
 # define BASES_H
 
-# include <unistd.h>
 # include <stdio.h>
 # include <string.h>
+# include <unistd.h> //chdir 함수를 사용하기 위해 포함해야 함
 # include <ctype.h>
 
 # define PATH_MAX   1024
