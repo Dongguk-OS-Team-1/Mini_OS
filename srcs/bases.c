@@ -31,9 +31,15 @@ int find_cmd(int size, char **cmd) {
         printf("grep input\n");
         grep_(size, cmd);
     } else if (strcmp(cmd[0], CP_CMD) == 0) {
-        printf("cp input\n");
+        if (size == 3) {
+            cp_(cmd[1], cmd[2]);
+        } else {
+            fprintf(stderr, "cp: missing file operand\n");
+        }
     } else if (strcmp(cmd[0], TOUCH_CMD) == 0) {
-        printf("touch input\n");
+        touch_(size, cmd);
+    } else if (strcmp(cmd[0], FIND_CMD) == 0) {
+        find_(size, cmd);
     } else if (strcmp(cmd[0], EXIT_CMD) == 0) {
         is_user_exit = 1;
     } else
@@ -93,3 +99,6 @@ void clear_buffer(void) {
     return ;
 }
 
+int is_absolute_path(const char *path) {
+    return (path[0] == '/');
+}
