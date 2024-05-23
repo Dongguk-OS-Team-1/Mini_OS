@@ -12,5 +12,7 @@
 # define COMMANDS_H
 
 void mkdir_(int argc, char *argv[]);
+int grep_(int argc, char *argv[]);
+int chmod_(int argc, char *argv[]);
 
 #endif

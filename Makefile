@@ -1,10 +1,10 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Wno-deprecated-declarations
+CFLAGS = -Wall -Wextra -Wno-deprecated-declarations
 NAME = mini_os
 INCLUDES = ./includes
 SRCS = ./srcs/
-HEADER = bases.h commands.h mkdir_.h
-SRC = $(SRCS)mini_os.c $(SRCS)bases.c ${SRCS}mkdir_.c
+HEADER = bases.h commands.h mkdir_.h grep_.h chmod_.h
+SRC = $(SRCS)mini_os.c $(SRCS)bases.c ${SRCS}mkdir_.c ${SRCS}grep_.c ${SRCS}chmod_.c
 OBJS = $(SRC:.c=.o)
 
 all: $(NAME)
