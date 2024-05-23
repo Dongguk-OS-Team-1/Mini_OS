@@ -14,11 +14,13 @@ void handle_ctrlc(int sig) {
 void  cat_(int argc, char* argv[]) {
 	int returned_opt;
 	int n_flag;
+	int E_flag;
 	int i;
 	int line_number;
 
 	optind = 1;
 	n_flag = 0;
+	E_flag = 0;
 
 	// '>' option
 	if (strcmp(argv[optind], ">") == 0) {
@@ -53,10 +55,13 @@ void  cat_(int argc, char* argv[]) {
 
 
 	// Parsing options using getopt()
-	while ((returned_opt = getopt(argc, argv, "n:")) != -1) 
+	while ((returned_opt = getopt(argc, argv, "n:E:")) != -1) 
 		switch (returned_opt) {
 		case 'n':
 			n_flag = 1;
+			break;
+		case 'E':
+			E_flag = 1;
 			break;
 		case '?':
 		default:
@@ -91,6 +96,32 @@ void  cat_(int argc, char* argv[]) {
 				while ((fgets(lines, sizeof(lines), file)) != NULL) {
 					printf("\t%d  ", line_number++);
 					printf("%s", lines);
+				}
+				fclose(file);
+			}
+			i++;
+		}
+
+	}
+	//	-E option
+	else if (E_flag) {
+		i = 2;
+		while (argv[i] != NULL) {
+			char* filename = argv[i];
+			FILE* file = fopen(filename, "r");
+
+			//fail to open file
+			if (file == NULL) {
+				fprintf(stderr, "Error: File does not exist.\n");
+				return;
+			}
+
+			else {
+				char lines[MAX_LINE_LENGTH];
+				while ((fgets(lines, sizeof(lines), file)) != NULL) {
+					lines[strlen(lines) - 1] = '\0';
+					printf("%s", lines);
+					printf("$\n");
 				}
 				fclose(file);
 			}
