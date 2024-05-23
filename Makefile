@@ -6,7 +6,6 @@ INCLUDES = ./includes
 SRCS = ./srcs/
 HEADER = bases.h commands.h mkdir_.h grep_.h chmod_.h cp_.h touch_.h find_.h
 SRC = $(SRCS)mini_os.c $(SRCS)bases.c ${SRCS}mkdir_.c ${SRCS}grep_.c ${SRCS}chmod_.c ${SRCS}cp_.c ${SRCS}touch_.c ${SRCS}find_.c ${SRCS}cd_.c ${SRCS}cat_.c
->>>>>>> upstream/dev
 OBJS = $(SRC:.c=.o)
 
 all: $(NAME)
