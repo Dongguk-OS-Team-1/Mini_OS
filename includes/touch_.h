@@ -1,19 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                  commands.h                                */
+/*                                    touch_.h                                 */
 /*                                                                            */
-/*                       By: 최정흠 <andyc707@dgu.ac.kr>                      */
+/*                              By: 신민철                                    */
 /*                                                                            */
-/*                        Created: 2024/05/14 16:19:02                        */
+/*                        Created: 2024/05/22                                 */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COMMANDS_H
-# define COMMANDS_H
+#ifndef TOUCH_H
+# define TOUCH_H
 
-void mkdir_(int argc, char *argv[]);
-void cp_(char *source, char *destination);
-void touch_(int argc, char ** argv);
+
+# include <stdlib.h>
+# include <fcntl.h>
+# include <errno.h>
+# include <sys/types.h>
+# include <sys/syscall.h>
+# include <sys/stat.h>
+# include <utime.h>
+# include <time.h>
+# include <stdbool.h>
+
 
 
 #endif
