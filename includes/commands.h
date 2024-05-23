@@ -18,4 +18,7 @@ void cp_(char *source, char *destination);
 void touch_(int argc, char ** argv);
 void find_(int argc, char *argv[]);
 
+void cd_(int argc, char* argv[]);
+void  cat_(int argc, char* argv[]);
+
 #endif
