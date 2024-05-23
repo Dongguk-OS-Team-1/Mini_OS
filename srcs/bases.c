@@ -26,8 +26,10 @@ int find_cmd(int size, char **cmd) {
         printf("cat input\n");
     } else if (strcmp(cmd[0], CHMOD_CMD) == 0) {
         printf("chmod input\n");
+        chmod_(size, cmd);
     } else if (strcmp(cmd[0], GREP_CMD) == 0) {
-        printf("grep input\n");       
+        printf("grep input\n");
+        grep_(size, cmd);
     } else if (strcmp(cmd[0], CP_CMD) == 0) {
         if (size == 3) {
             cp_(cmd[1], cmd[2]);
