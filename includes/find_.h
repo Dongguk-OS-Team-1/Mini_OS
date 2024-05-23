@@ -1,31 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                  commands.h                                */
+/*                                  find_.h                                   */
 /*                                                                            */
 /*                       By: 최정흠 <andyc707@dgu.ac.kr>                      */
 /*                                                                            */
-/*                        Created: 2024/05/14 16:19:02                        */
+/*                        Created: 2024/05/19 18:16:25                        */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COMMANDS_H
+#ifndef FIND_H
+# define FIND_H
 
-# define COMMANDS_H
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <unistd.h>
+# include <dirent.h>
 
-
-
-void mkdir_(int argc, char *argv[]);
-int grep_(int argc, char *argv[]);
-int chmod_(int argc, char *argv[]);
-void cp_(char *source, char *destination);
-void touch_(int argc, char ** argv);
-void find_(int argc, char *argv[]);
-
-void cd_(int argc, char* argv[]);
-void  cat_(int argc, char* argv[]);
-
-void list_directory(int argc, char **argv);
-
-
+void find_files(const char *path);
+void name_recur(char *name, char *target);
+void type_recur(char *name, char *mode);
+int is_absolute_path(const char *path);
 
 #endif
