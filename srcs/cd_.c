@@ -30,8 +30,8 @@ void  cd_(int argc, char* argv[]) {
             }
         }
     }
-    // '~' or ' ' Change to home directory
-    else if (argc == 1 || (argc == 2 && strcmp(argv[1], "~") == 0)) {
+    //Change to home directory
+    else if (argc == 1) {
         if (chdir(getenv("HOME")) != 0) {
             error_detect();
             return ;
