@@ -9,15 +9,11 @@
 /* ************************************************************************** */
 
 #ifndef COMMANDS_H
-
 # define COMMANDS_H
 
 
-
 void mkdir_(int argc, char *argv[]);
-
 void list_directory(int argc, char **argv);
-
 
 
 #endif
