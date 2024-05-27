@@ -12,30 +12,28 @@
 #include "commands.h"
 
 int find_cmd(int size, char **cmd) {
-
     int is_user_exit;
 
     is_user_exit = 0;
     if (strcmp(cmd[0], LS_CMD) == 0) {
-        printf("ls input\n"); // ls 함수호출 
-	      list_directory(size, cmd);
+        list_directory(size, cmd);
     } else if (strcmp(cmd[0], CD_CMD) == 0) {
         cd_(size, cmd);
     } else if (strcmp(cmd[0], MKDIR_CMD) == 0) {
         mkdir_(size, cmd);
+    } else if (strcmp(cmd[0], RMDIR_CMD) == 0) {
+        rmdir_(size, cmd);
     } else if (strcmp(cmd[0], CAT_CMD) == 0) {
         cat_(size, cmd);
     } else if (strcmp(cmd[0], CHMOD_CMD) == 0) {
         chmod_(size, cmd);
     } else if (strcmp(cmd[0], GREP_CMD) == 0) {
-        printf("grep input\n");
         grep_(size, cmd);
     } else if (strcmp(cmd[0], CP_CMD) == 0) {
-        if (size == 3) {
+        if (size == 3)
             cp_(cmd[1], cmd[2]);
-        } else {
+        else
             fprintf(stderr, "cp: missing file operand\n");
-        }
     } else if (strcmp(cmd[0], TOUCH_CMD) == 0) {
         touch_(size, cmd);
     } else if (strcmp(cmd[0], FIND_CMD) == 0) {
@@ -49,10 +47,9 @@ int find_cmd(int size, char **cmd) {
 }
 
 int parsing_cmd(char *target, char **ret) {
-
-    int   cnt;
-    char  *token;
-    char  *temp;
+    int cnt;
+    char *token;
+    char *temp;
 
     cnt = 0;
     temp = target;
@@ -62,41 +59,39 @@ int parsing_cmd(char *target, char **ret) {
         ret[cnt] = token;
         cnt++;
     }
-    
+
     return (cnt);
 }
 
 void make_lower_case_word(char *target) {
-
     while (*target) {
         *target = tolower((unsigned char) *target);
         target++;
     }
 
-    return ;
+    return;
 }
 
 void init_1_dim_char(char *target, int size) {
-
     for (int i = 0; i < size; i++)
         *(target + i) = 0;
 
-    return ;
+    return;
 }
 
 void init_2_dim_char(char **target, int size) {
-  
+
     for (int i = 0; i < size; i++)
         *(target + i) = 0;
-  
-    return ;
+
+    return;
 }
 
 void clear_buffer(void) {
-  
+
     while (getchar() != '\n');
 
-    return ;
+    return;
 }
 
 int is_absolute_path(const char *path) {
