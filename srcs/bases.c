@@ -17,21 +17,28 @@ int find_cmd(int size, char **cmd) {
 
     is_user_exit = 0;
     if (strcmp(cmd[0], LS_CMD) == 0) {
-        printf("ls input\n");
+        list_directory(size, cmd);
     } else if (strcmp(cmd[0], CD_CMD) == 0) {
         cd_(size, cmd);
     } else if (strcmp(cmd[0], MKDIR_CMD) == 0) {
         mkdir_(size, cmd);
+    } else if (strcmp(cmd[0], RMDIR_CMD) == 0) {
+        rmdir_(size, cmd);
     } else if (strcmp(cmd[0], CAT_CMD) == 0) {
         cat_(size, cmd);
     } else if (strcmp(cmd[0], CHMOD_CMD) == 0) {
-        printf("chmod input\n");
+        chmod_(size, cmd);
     } else if (strcmp(cmd[0], GREP_CMD) == 0) {
-        printf("grep input\n");
+        grep_(size, cmd);
     } else if (strcmp(cmd[0], CP_CMD) == 0) {
-        printf("cp input\n");
+        if (size == 3)
+            cp_(cmd[1], cmd[2]);
+        else
+            fprintf(stderr, "cp: missing file operand\n");
     } else if (strcmp(cmd[0], TOUCH_CMD) == 0) {
-        printf("touch input\n");
+        touch_(size, cmd);
+    } else if (strcmp(cmd[0], FIND_CMD) == 0) {
+        find_(size, cmd);
     } else if (strcmp(cmd[0], EXIT_CMD) == 0) {
         is_user_exit = 1;
     } else
@@ -77,17 +84,20 @@ void init_1_dim_char(char *target, int size) {
 }
 
 void init_2_dim_char(char **target, int size) {
-
+  
     for (int i = 0; i < size; i++)
         *(target + i) = 0;
-
+  
     return ;
 }
 
 void clear_buffer(void) {
-
+  
     while (getchar() != '\n');
 
     return ;
 }
 
+int is_absolute_path(const char *path) {
+    return (path[0] == '/');
+}

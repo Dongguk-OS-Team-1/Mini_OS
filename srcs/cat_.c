@@ -69,7 +69,6 @@ void  cat_(int argc, char* argv[]) {
 			return;
 		}
 	
-
 	if (*argv == NULL) {
 		fprintf(stderr, "usage: cat [options] file_name\n");
 		return;
@@ -127,6 +126,7 @@ void  cat_(int argc, char* argv[]) {
 		}
 
 	}
+
 	// no option
 	else {
 		i = 1;

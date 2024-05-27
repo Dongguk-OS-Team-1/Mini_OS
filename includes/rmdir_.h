@@ -1,15 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                    mkdir.h                                 */
+/*                                   rmdir_.h                                 */
 /*                                                                            */
 /*                       By: 최정흠 <andyc707@dgu.ac.kr>                      */
 /*                                                                            */
-/*                        Created: 2024/05/14 17:18:53                        */
+/*                        Created: 2024/05/20 15:15:33                        */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MKDIR_H
-# define MKDIR_H
+#ifndef RMDIR_H
+# define RMDIR_H
 
 # include <unistd.h>
 # include <stdio.h>
@@ -25,9 +25,7 @@
 # define MAX 1024
 
 typedef struct  s_thread_args {
-    int     dirfd;
     char    dir_name[MAX];
-    mode_t  mode;
 }               ThreadArgs;
 
 int find_brace_pattern(char *target, int *start, int *end);

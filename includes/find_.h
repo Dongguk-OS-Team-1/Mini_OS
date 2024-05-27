@@ -1,35 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                    mkdir.h                                 */
+/*                                  find_.h                                   */
 /*                                                                            */
 /*                       By: 최정흠 <andyc707@dgu.ac.kr>                      */
 /*                                                                            */
-/*                        Created: 2024/05/14 17:18:53                        */
+/*                        Created: 2024/05/19 18:16:25                        */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MKDIR_H
-# define MKDIR_H
+#ifndef FIND_H
+# define FIND_H
 
-# include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <sys/fcntl.h>
-# include <fcntl.h>
-# include <errno.h>
-# include <sys/types.h>
-# include <sys/stat.h>
-# include <sys/syscall.h>
-# include <pthread.h>
+# include <string.h>
+# include <unistd.h>
+# include <dirent.h>
 
-# define MAX 1024
-
-typedef struct  s_thread_args {
-    int     dirfd;
-    char    dir_name[MAX];
-    mode_t  mode;
-}               ThreadArgs;
-
-int find_brace_pattern(char *target, int *start, int *end);
+void find_files(const char *path);
+void name_recur(char *name, char *target);
+void type_recur(char *name, char *mode);
+int is_absolute_path(const char *path);
 
 #endif
