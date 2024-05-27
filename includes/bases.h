@@ -30,6 +30,7 @@
 # define CP_CMD     "cp"
 # define TOUCH_CMD  "touch"
 # define FIND_CMD   "find"
+# define RMDIR_CMD  "rmdir"
 
 int   find_cmd(int size, char **cmd);
 int   parsing_cmd(char *target, char **ret);
