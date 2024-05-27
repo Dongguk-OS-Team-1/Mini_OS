@@ -11,10 +11,9 @@ OBJS = $(SRC:.c=.o)
 all: $(NAME)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $^ -I $(INCLUDES) -o $@ 
+	$(CC) $(CFLAGS) -c $^ -I $(INCLUDES) -o $@
 
 $(NAME): $(OBJS)
-
 	$(CC) $(CFLAGS) -o $@ $(OBJS)
 
 clean:

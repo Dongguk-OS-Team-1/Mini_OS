@@ -16,6 +16,7 @@
 # include <unistd.h> //chdir 함수를 사용하기 위해 포함해야 함
 # include <ctype.h>
 
+
 # define PATH_MAX   1024
 # define NAME_MAX   1024
 # define CMD_MAX    1024
@@ -32,6 +33,8 @@
 # define FIND_CMD   "find"
 # define RMDIR_CMD  "rmdir"
 
+
+
 int   find_cmd(int size, char **cmd);
 int   parsing_cmd(char *target, char **ret);
 void  make_lower_case_word(char *target);
@@ -39,5 +42,6 @@ void  init_1_dim_char(char *target, int size);
 void  init_2_dim_char(char **target, int size);
 void  clear_buffer(void);
 int   is_absolute_path(const char *path);
+
 
 #endif

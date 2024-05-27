@@ -12,7 +12,6 @@
 #include "commands.h"
 
 int find_cmd(int size, char **cmd) {
-
     int is_user_exit;
 
     is_user_exit = 0;
@@ -48,10 +47,9 @@ int find_cmd(int size, char **cmd) {
 }
 
 int parsing_cmd(char *target, char **ret) {
-
-    int   cnt;
-    char  *token;
-    char  *temp;
+    int cnt;
+    char *token;
+    char *temp;
 
     cnt = 0;
     temp = target;
@@ -61,41 +59,39 @@ int parsing_cmd(char *target, char **ret) {
         ret[cnt] = token;
         cnt++;
     }
-    
+
     return (cnt);
 }
 
 void make_lower_case_word(char *target) {
-
     while (*target) {
         *target = tolower((unsigned char) *target);
         target++;
     }
 
-    return ;
+    return;
 }
 
 void init_1_dim_char(char *target, int size) {
-
     for (int i = 0; i < size; i++)
         *(target + i) = 0;
 
-    return ;
+    return;
 }
 
 void init_2_dim_char(char **target, int size) {
-  
+
     for (int i = 0; i < size; i++)
         *(target + i) = 0;
-  
-    return ;
+
+    return;
 }
 
 void clear_buffer(void) {
-  
+
     while (getchar() != '\n');
 
-    return ;
+    return;
 }
 
 int is_absolute_path(const char *path) {
