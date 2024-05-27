@@ -136,5 +136,3 @@ void list_directory(int argc, char **argv) {
 
     free(namelist);
 }
-
-

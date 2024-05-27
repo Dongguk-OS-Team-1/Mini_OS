@@ -1,147 +1,116 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                  mkdir_.c                                  */
+/*                                  rmdir_.c                                  */
 /*                                                                            */
 /*                       By: 최정흠 <andyc707@dgu.ac.kr>                      */
 /*                                                                            */
-/*                        Created: 2024/05/14 16:29:12                        */
+/*                        Created: 2024/05/20 15:10:12                        */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "bases.h"
-#include "mkdir_.h"
+#include "rmdir_.h"
 
-int     build_dir(char *path, mode_t mode);
-int     build_brace_dir(mode_t mode, char *real_path, int find_dirname, int start, int end);
-mode_t  convert_mode_str_to_oct(const char* target);
+int     collapse_dir(char *path_org, char *target);
+int     collapse_brace_dir(char *real_path, int find_dirname, int start, int end);
 int     is_absolute_path(const char *path);
-void    *pthread_mkdir_func(void *arg_);
-void    print_log(FILE *dirFile, char *dir_name);
-void    error_detect(void);
+void    *pthread_rmdir_func(void *arg_);
+void    error_detect_rmdir(char *target);
+void    print_log_rmdir(FILE *dirFile, char *dir_name);
 
-int v_flag = 0;
+void  rmdir_(int argc, char *argv[]) {
 
-void  mkdir_(int argc, char *argv[]) {
-    
     int     p_flag;
     int     returned_opt;
     int     success;
     int     dirfd;
     int     i;
-    int     index;
     int     path_len;
     int     start, end;
-    char    *mode;
     char    real_path[MAX];
-    mode_t  old_mask;
-    mode_t  mode_oct;
+    char    *temp;
     int     res;
-    
+
     // Initialize getopt's external variables
     optind = 1;
     optopt = '\0';
     optarg = NULL;
-    // Initialize mode variables
-    mode = NULL;
-    mode_oct = p_flag = v_flag = 0;
-    
+
+    p_flag = 0;
+
     // Parsing options using getopt()
-    while ((returned_opt = getopt(argc, argv, "m:pv")) != -1)
+    while ((returned_opt = getopt(argc, argv, "p")) != -1)
         switch (returned_opt) {
-            case 'm':
-                mode = optarg; // Get mode input
-                break ;
             case 'p':
                 p_flag = 1;
                 break ;
-            case 'v':
-                v_flag = 1;
-                break ;
             case '?':
             default:
-                fprintf(stderr, "usage: mkdir [-pv] [-m mode] directory_name ...\n");
+                fprintf(stderr, "usage: rmdir [-p] directory_name ...\n");
                 return ;
         }
-    
+
     // Move the pointer to the path
     argc -= optind;
     argv += optind;
-    
+
     if (*argv == NULL) {
-        fprintf(stderr, "usage: mkdir [-pv] [-m mode] directory_name ...\n");
+        fprintf(stderr, "usage: rmdir [-p] directory_name ...\n");
         return ;
     }
-    
-    // set file mode
-    if (mode == NULL) {
-        mode_oct = S_IRWXU | S_IRWXG | S_IRWXO; // Set mode 0777
-    } else {
-        if ((int)(mode_oct = convert_mode_str_to_oct(mode)) == -1) {
-            fprintf(stderr, "invaild file mode: %s\n", mode);
-            return ;
-        }
-    }
-    
-    old_mask = umask(022);
+
     for ( ; argc > 0; argc--, argv++) {
-        
+
         success = 1;
         
+        // Trim trailing slashes from the path.
+        temp = strrchr(*argv, '\0');
+        while (--temp > *argv && *temp == '/')
+            *temp = '\0';
+
         // Check if the directory name is a relative path
         if (!is_absolute_path(*argv))
             realpath(*argv, real_path); // transfrom to real path
         else if (!p_flag)
             strcpy(real_path, *argv);
-        
-        if (p_flag) {
-            for (index = (int)strlen(real_path) - 1; real_path[index - 1] != '/'; index--);
-            real_path[index] = '\0';
-            strcat(real_path, *argv);
-            success = build_dir(real_path, mode_oct);
-        } else { // Case of don't need to make subdirectory
+
+        if (p_flag)
+            success = collapse_dir(real_path, *argv);
+        else { // Case of don't need to make subdirectory
             path_len = (int)strlen(real_path);
-            for (i = path_len - 1; i >= 0; i--)
-                if (real_path[i] == '/') {
-                    real_path[i] = '\0';
-                    i++;
-                    break ;
-                }
+
             // Find dirname{%d..%d} pattern
-            if (find_brace_pattern(real_path + i, &start, &end)) {
-                success = build_brace_dir(mode_oct, real_path, i, start, end);
+            if (find_brace_pattern(real_path, &start, &end)) {
+                path_len = (int)strlen(real_path);
+                for (i = path_len; i >= 0; i--)
+                    if (real_path[i] == '/') {
+                        real_path[i] = '\0';
+                        i++;
+                        break;
+                    }
+                success = collapse_brace_dir(real_path, i, start, end);
             } else { // input dosen't have dirname{%d..%d} pattern
                 if ((dirfd = open(real_path, O_RDONLY)) != -1) {
-                    res = syscall(SYS_mkdirat, dirfd, real_path + i, mode_oct);
-                    if (res < 0) {
-                        perror("mkdir : ");
+                    res = syscall(SYS_rmdir, real_path);
+                    if (res < 0)
                         success = 0;
-                    }
                     else {
-                        if (v_flag)
-                            printf("%s/%s\n", real_path, real_path + i);
-                        
                         FILE* dirFile = fopen("resources/log.txt", "a+");
                         if (dirFile == NULL)
                             perror("can't open log.txt");
                         else
-                            print_log(dirFile, real_path + i);
+                            print_log_rmdir(dirFile, real_path);
                     }
-                    
                     close(dirfd);
                 }
-                else {
-                    perror("mkdir");
+                else
                     success = 0;
-                }
             }
         }
         if (!success)
-            error_detect();
+            error_detect_rmdir(*argv);
     }
 
-    
-    umask(old_mask);
-    
     return ;
 }
 
@@ -151,9 +120,6 @@ void  mkdir_(int argc, char *argv[]) {
  *  Inputs:
  *      char *path_org
  *          The path where directories will be created.
- *
- *      mode_t mode
- *          The file permission mode for the directories to be created.
  *
  *  Returns:
  *      Returns 1 if the directories are created successfully.
@@ -166,80 +132,60 @@ void  mkdir_(int argc, char *argv[]) {
  *      - If intermediate directories in the path do not exist, they will be created.
  *      - If the path already exists as a directory, an error message will be printed.
  */
-int build_dir(char *path_org, mode_t mode) {
-    
+int collapse_dir(char *path_org, char *target) {
+
     // path_stat : is structure to store file/directory information
-    struct stat path_stat;
+    // struct stat path_stat;
     // dirfd : is file descriptor for the directory.
     int         dirfd;
     // Pointers to manipulate the path string
-    char        *path, *i, *temp;
+    char        *path, *end_path_org, *temp;
     // res : is syscall function's return value
     int         res;
     // char *dir_name;
-    
-    // Set the initial path pointer.
-    path = path_org;
-    
+    const int   len_path_org = strlen(path_org);
+    const int   len_target = strlen(target);
+    int         i;
+    int         j;
+
+    // Check Path is exist
+    if ((dirfd = open(path_org, O_RDONLY)) != -1)
+        close(dirfd);
+    else
+        return (0);
+
+    if (len_path_org < len_target) // Need ERROR SETTING
+        return (0);
+
+    i = len_path_org - 1;
+    j = len_target - 1;
+    for ( ; j >= 0; i--, j--)
+        if (path_org[i] != target[j]) // Need ERROR SETTING
+            return (0);
+    end_path_org = path_org + i;
+
     // Trim trailing slashes from the path.
     temp = strrchr(path_org, '\0');
     while (--temp > path_org && *temp == '/')
         *temp = '\0';
-    
-    int len = (int)strlen(path_org);
-    if (path_org[len - 1] != '/') {
-        path_org[len] = '/';
-        path_org[len + 1] = '\0';
-    }
-    
-    // Skip leading slash if present.
-    if (*path == '/')
-        path++;
-    // Iterate through the path components.
-    for ( ; ; path++) {
-        if (*path == '\0')
-            break ;
-        else if (*path == '/')
-            *path = '\0';
-        else
+
+    path = path_org + (int)strlen(path_org) - 1;
+
+    for ( ; path >= end_path_org; path--) {
+        if (*path != '/')
             continue ;
-        
-        res = 0;
-        // Check if the path component exists
-        if (stat(path_org, &path_stat) == -1) { // Path does not exist
-            if (errno == ENOENT) {
-                // Find the previous slash
-                for (i = path - 1; *(i - 1) != '/'; i--);
-                *(i - 1) = '\0';
-                // Open the parent directory and create the directory component
-                if ((dirfd = open(path_org, O_RDONLY)) != -1) {
-                    res = syscall(SYS_mkdirat, dirfd, i, mode);
-                    close(dirfd);
-                }
-                *(i - 1) = '/';
-                if (res < 0)
-                    perror("mkdir");
-                else {
-                    if (v_flag)
-                        printf("%s\n", path_org);
-                    
-                    FILE* dirFile = fopen("resources/log.txt", "a+");
-                    if (dirFile == NULL)
-                        perror("can't open log.txt");
-                    else
-                        print_log(dirFile, i);
-                }
-            } else
-                return (0);
-        } else { // Path does exist
-            if (!S_ISDIR(path_stat.st_mode))
-                fprintf(stderr, "%s:No such file or directory\n", path_org);
-            //else
-            //    dir_name = path + 1;
-        }
-        *path = '/';
+
+        if ((res = syscall(SYS_rmdir, path_org)) != 0)
+            return (0);
+
+        FILE* dirFile = fopen("resources/log.txt", "a+");
+        if (dirFile == NULL)
+            perror("can't open log.txt");
+        else
+            print_log_rmdir(dirFile, path + 1);
+        *path = '\0';
     }
-    
+
     return (1);
 }
 
@@ -249,9 +195,6 @@ int build_dir(char *path_org, mode_t mode) {
  *  and a range of numbers.
  *
  *  Inputs:
- *      mode_t  mode
- *         The file permission mode for the directories to be created.
- *
  *      char  *real_path
  *         The path where the directories will be created.
  *
@@ -277,30 +220,30 @@ int build_dir(char *path_org, mode_t mode) {
  *      - The function creates directories in parallel using multiple threads.
  *      - The function returns 0 if the range of numbers is invalid or if an error occurs during directory creation.
  */
-int build_brace_dir(mode_t mode, char *real_path, int find_dirname, int start, int end) {
-    
+int collapse_brace_dir(char *real_path, int find_dirname, int start, int end) {
+
     char  dir_name[MAX];
-    
+
     // brc_pt_cnt : is the number of directories to create from the brace pattern.
     int brc_pt_cnt;
     if ((brc_pt_cnt = end - start + 1) <= 0) {
         fprintf(stderr, "Invalid dirname{%d..%d}\n", start, end);
         return (0);
     }
-    
+
     pthread_t   *thread_ids;
     ThreadArgs  *thread_args;
     thread_ids = (pthread_t *) malloc(sizeof(pthread_t) * brc_pt_cnt);
     thread_args = (ThreadArgs *) malloc(sizeof(ThreadArgs) * brc_pt_cnt);
-    
+
     // dirfd: is used to verify the path of the directory
     //          to be created and to create the directory.
     int dirfd;
     if ((dirfd = open(real_path, O_RDONLY)) == -1) {
-        fprintf(stderr, "open funct failed\n");
+        fprintf(stderr, "open func failed\n");
         return (0);
     }
-    
+
     // res: is used for exception.
     int res;
     int j;
@@ -310,17 +253,15 @@ int build_brace_dir(mode_t mode, char *real_path, int find_dirname, int start, i
         /**
          *  Make args for thread.
          */
-        thread_args[j].dirfd = dirfd;
-        sprintf(thread_args[j].dir_name, "%s%d", dir_name, start + j);
-        thread_args[j].mode = mode;
-        
-        res = pthread_create(&thread_ids[j], NULL, pthread_mkdir_func, (void *)&thread_args[j]);
+        sprintf(thread_args[j].dir_name, "%s/%s%d", real_path, dir_name, start + j);
+
+        res = pthread_create(&thread_ids[j], NULL, pthread_rmdir_func, (void *)&thread_args[j]);
         if (res != 0) {
             perror("Failed to create thread");
             return (0);
         }
     }
-    
+
     res = 0;
     for (j = 0; j < brc_pt_cnt; j++) {
         res = pthread_join(thread_ids[j], NULL);
@@ -328,85 +269,53 @@ int build_brace_dir(mode_t mode, char *real_path, int find_dirname, int start, i
             perror("Failed to join thread");
             return (0);
         } else {
-            if (v_flag)
-                printf("%s/%s\n", real_path, thread_args[j].dir_name);
             FILE* dirFile = fopen("resources/log.txt", "a+");
             if (dirFile == NULL)
                 perror("can't open log.txt");
             else
-                print_log(dirFile, thread_args[j].dir_name);
-            
+                print_log_rmdir(dirFile, thread_args[j].dir_name);
         }
     }
-    
+
     close(dirfd);
     free(thread_ids);
     free(thread_args);
-    
+
     return (1);
 }
 
-void *pthread_mkdir_func(void *arg_) {
-    
+void *pthread_rmdir_func(void *arg_) {
+
     ThreadArgs *arg = (ThreadArgs *) arg_;
-    
-    int result = syscall(SYS_mkdirat, arg->dirfd, arg->dir_name, arg->mode);
+
+    int result = syscall(SYS_rmdir, arg->dir_name);
     if (result < 0) {
-        perror("mkdir");
+        perror("rmdir");
         pthread_exit((void *)1);
     }
-    
+
     pthread_exit(NULL);
 }
 
-mode_t convert_mode_str_to_oct(const char* target) {
-
-    mode_t result;
-    size_t len;
-
-    len = strlen(target);
-    if (strlen(target) >= 4)
-        return (-1);
-
-    result = 0;
-    for (int i = 0; target[i] != '\0'; i++) {
-        if (target[i] >= '0' && target[i] <= '7')
-            result |= (target[i] - '0') << (len - i - 1) * 3;
-        else
-            return (-1);
-    }
-
-    return (result);
-}
-
-void error_detect(void) {
+void error_detect_rmdir(char *target) {
     switch (errno) {
-        case EEXIST:
-            fprintf(stderr, "Error: Directory already exists.\n");
-            break ;
         case EACCES:
-            fprintf(stderr, "Error: Permission denied to create directory.\n");
-            break ;
-        case ENAMETOOLONG:
-            fprintf(stderr, "Error: Pathname is too long.\n");
+            fprintf(stderr, "rmdir: %s: Permission denied to remove directory.\n", target);
             break ;
         case ENOENT:
-            fprintf(stderr, "Error: A component of the path does not exist.\n");
-            break ;
         case ENOTDIR:
-            fprintf(stderr, "Error: A component of the path is not a directory.\n");
+            fprintf(stderr, "rmdir: %s: No such file or directory.\n", target);
             break ;
-        case EROFS:
-            fprintf(stderr, "Error: Read-only file system. Cannot create directory.\n");
+        case ENOTEMPTY:
+            fprintf(stderr, "rmdir: %s: Directory not empty.\n", target);
             break ;
         default:
-            perror("mkdir failed");
-            fprintf(stderr, "Error: %s\n", strerror(errno));
+            fprintf(stderr, "rmdir: %s: %s\n", target, strerror(errno));
     }
 }
 
-void print_log(FILE *dirFile, char *dir_name) {
-    
+void print_log_rmdir(FILE *dirFile, char *dir_name) {
+
     char line[MAX];
     int nameExists = 0;
     while (fgets(line, MAX, dirFile) != NULL) {
@@ -427,6 +336,7 @@ void print_log(FILE *dirFile, char *dir_name) {
         fprintf(dirFile, "d %s\n", dir_name);
         fclose(dirFile);
     }
-    
+
     return ;
 }
+

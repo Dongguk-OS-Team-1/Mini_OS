@@ -12,6 +12,7 @@
 #include "commands.h"
 
 int main(void) {
+
     int parsed_cnt;
     int is_user_exit;
     char current_dir[PATH_MAX];
@@ -36,6 +37,6 @@ int main(void) {
         if (is_user_exit)
             break;
     }
-
+  
     return (0);
 }

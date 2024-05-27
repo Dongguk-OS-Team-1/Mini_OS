@@ -1,5 +1,5 @@
 #ifndef LS_H
-#define LS_H
+# define LS_H
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -8,6 +8,3 @@
 void list_directory(int argc, char **argv);
 
 #endif
-
-
-

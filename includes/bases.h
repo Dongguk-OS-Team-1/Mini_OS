@@ -11,9 +11,9 @@
 #ifndef BASES_H
 # define BASES_H
 
-# include <unistd.h>
 # include <stdio.h>
 # include <string.h>
+# include <unistd.h> //chdir 함수를 사용하기 위해 포함해야 함
 # include <ctype.h>
 
 
@@ -30,6 +30,8 @@
 # define GREP_CMD   "grep"
 # define CP_CMD     "cp"
 # define TOUCH_CMD  "touch"
+# define FIND_CMD   "find"
+# define RMDIR_CMD  "rmdir"
 
 
 
@@ -39,6 +41,7 @@ void  make_lower_case_word(char *target);
 void  init_1_dim_char(char *target, int size);
 void  init_2_dim_char(char **target, int size);
 void  clear_buffer(void);
+int   is_absolute_path(const char *path);
 
 
 #endif
