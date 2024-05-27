@@ -1,7 +1,7 @@
 #include "bases.h"
 #include "cd_.h"
 
-void    error_detect(void);
+void    error_detect_cd(void);
 
 void  cd_(int argc, char* argv[]) {
 
@@ -9,7 +9,7 @@ void  cd_(int argc, char* argv[]) {
         // Change to root directory
         if (strcmp(argv[1], "/") == 0) {
             if (chdir("/") != 0) {
-                error_detect();
+                error_detect_cd();
                 return ;
             }
         }
@@ -18,14 +18,14 @@ void  cd_(int argc, char* argv[]) {
         // '..' Change to parent directory
         else if (strcmp(argv[1], "..") == 0) {
             if (chdir("..") != 0) {
-                error_detect();
+                error_detect_cd();
                     return ;
             }
         }
         //Change directory based on the provided path
         else {
             if (chdir(argv[1]) != 0) {
-                error_detect();
+                error_detect_cd();
                     return ;
             }
         }
@@ -33,7 +33,7 @@ void  cd_(int argc, char* argv[]) {
     //Change to home directory
     else if (argc == 1) {
         if (chdir(getenv("HOME")) != 0) {
-            error_detect();
+            error_detect_cd();
             return ;
         }
     }
@@ -44,7 +44,7 @@ void  cd_(int argc, char* argv[]) {
     }
 }
 
-void    error_detect(void) {
+void    error_detect_cd(void) {
     switch (errno) {
         case EACCES:
             fprintf(stderr, "Error: Permission denied to change directory.\n");

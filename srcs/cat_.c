@@ -75,8 +75,6 @@ void  cat_(int argc, char* argv[]) {
 		return;
 	}
 
-	
-
 	//	-n option
 	else if (n_flag) {
 		i = 2;
