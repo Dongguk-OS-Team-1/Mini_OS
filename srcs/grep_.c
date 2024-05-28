@@ -9,6 +9,7 @@ void to_lowercase(char *str) {
 }
 
 void grep_impl(const char *pattern, const char *file_path, int options) {
+
     FILE *file = fopen(file_path, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: Unable to open file '%s'\n", file_path);
@@ -49,6 +50,7 @@ void grep_impl(const char *pattern, const char *file_path, int options) {
     if (options & 1) { // Check if ignore_case option is enabled
         free(lowercase_pattern);
     }
+
     fclose(file);
 }
 

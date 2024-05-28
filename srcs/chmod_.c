@@ -1,7 +1,5 @@
 #include"chmod_.h"
 
-
-
 mode_t convert_mode_str_to_oct(const char *mode_str) {
     char *endptr;
     errno = 0;
@@ -14,7 +12,6 @@ mode_t convert_mode_str_to_oct(const char *mode_str) {
 
     return (mode_t)mode;
 }
-
 
 int chmod_(int argc, char *argv[]) {
     if (argc < 3) {

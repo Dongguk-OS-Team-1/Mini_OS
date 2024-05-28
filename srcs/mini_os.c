@@ -9,14 +9,15 @@
 /* ************************************************************************** */
 
 #include "bases.h"
+#include "commands.h"
 
 int main(void) {
 
-    int   parsed_cnt;
-    int   is_user_exit;
-    char  current_dir[PATH_MAX];
-    char  input_cmd[CMD_MAX];
-    char  *parsed_cmd[PARSED_MAX];
+    int parsed_cnt;
+    int is_user_exit;
+    char current_dir[PATH_MAX];
+    char input_cmd[CMD_MAX];
+    char *parsed_cmd[PARSED_MAX];
 
     is_user_exit = 0;
     while (1) {
@@ -36,6 +37,6 @@ int main(void) {
         if (is_user_exit)
             break;
     }
-
+  
     return (0);
 }
