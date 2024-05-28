@@ -1,7 +1,15 @@
 #include "grep_.h"
+
 #define MAX_LINE_LENGTH 1024
 
-void grep_impl(const char *pattern, const char *file_path, bool ignore_case, bool invert_match, bool show_line_numbers) {
+void to_lowercase(char *str) {
+    for (int i = 0; str[i]; i++) {
+        str[i] = tolower(str[i]);
+    }
+}
+
+void grep_impl(const char *pattern, const char *file_path, int options) {
+
     FILE *file = fopen(file_path, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: Unable to open file '%s'\n", file_path);
@@ -10,40 +18,37 @@ void grep_impl(const char *pattern, const char *file_path, bool ignore_case, boo
 
     char line[MAX_LINE_LENGTH];
     int line_number = 1;
-    while (fgets(line, sizeof(line), file) != NULL) {
-        char *line_copy = strdup(line); // 원본 라인을 유지하기 위해 복사본 사용
-        char *line_to_check = line_copy;
+    char *lowercase_pattern = NULL;
+    if (options & 1) { // Check if ignore_case option is enabled
+        lowercase_pattern = strdup(pattern);
+        to_lowercase(lowercase_pattern);
+    }
 
-        if (ignore_case) {
-            // 대소문자를 구분하지 않고 비교하기 위해 소문자로 변환
-            for (int i = 0; line_to_check[i]; i++) {
-                line_to_check[i] = tolower(line_to_check[i]);
-            }
-            char *lowercase_pattern = strdup(pattern);
-            for (int i = 0; lowercase_pattern[i]; i++) {
-                lowercase_pattern[i] = tolower(lowercase_pattern[i]);
-            }
-            pattern = lowercase_pattern;
+    while (fgets(line, sizeof(line), file) != NULL) {
+        char *line_copy = strdup(line);
+        if (options & 1) { // Check if ignore_case option is enabled
+            to_lowercase(line_copy);
         }
 
-        bool match = (strstr(line_to_check, pattern) != NULL);
+        bool match = (strstr(options & 1 ? line_copy : line, options & 1 ? lowercase_pattern : pattern) != NULL);
 
-        if (invert_match) {
+        if (options & 2) { // Check if invert_match option is enabled
             match = !match;
         }
 
         if (match) {
-            if (show_line_numbers) {
+            if (options & 4) { // Check if show_line_numbers option is enabled
                 printf("%d:", line_number);
             }
             printf("%s", line);
         }
 
         free(line_copy);
-        if (ignore_case) {
-            free((char *)pattern); // 메모리 해제
-        }
         line_number++;
+    }
+
+    if (options & 1) { // Check if ignore_case option is enabled
+        free(lowercase_pattern);
     }
 
     fclose(file);
@@ -55,34 +60,39 @@ int grep_(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    bool ignore_case = false;
-    bool invert_match = false;
-    bool show_line_numbers = false;
+    int options = 0;
     int arg_start_index = 1;
 
     // 옵션 파싱
-    if (argc >= 4 && strcmp(argv[1], "-i") == 0) {
-        ignore_case = true;
+    while (arg_start_index < argc && argv[arg_start_index][0] == '-') {
+        for (int i = 1; argv[arg_start_index][i]; i++) {
+            if (argv[arg_start_index][i] == 'i') {
+                options |= 1; // Set ignore_case option bit
+            } else if (argv[arg_start_index][i] == 'v') {
+                options |= 2; // Set invert_match option bit
+            } else if (argv[arg_start_index][i] == 'n') {
+                options |= 4; // Set show_line_numbers option bit
+            } else {
+                fprintf(stderr, "Unknown option: -%c\n", argv[arg_start_index][i]);
+                exit(EXIT_FAILURE);
+            }
+        }
         arg_start_index++;
     }
 
-    if (argc >= 4 && strcmp(argv[arg_start_index], "-v") == 0) {
-        invert_match = true;
-        arg_start_index++;
-    }
-
-    if (argc >= 4 && strcmp(argv[arg_start_index], "-n") == 0) {
-        show_line_numbers = true;
-        arg_start_index++;
+    if (arg_start_index >= argc - 1) {
+        fprintf(stderr, "Usage: %s [-i] [-v] [-n] <pattern> <file1> [<file2> ...]\n", argv[0]);
+        exit(EXIT_FAILURE);
     }
 
     char *pattern = argv[arg_start_index++];
-    
+
     // 각 파일에 대해 grep 실행
     for (int i = arg_start_index; i < argc; i++) {
         char *file_path = argv[i];
-        grep_impl(pattern, file_path, ignore_case, invert_match, show_line_numbers);
+        grep_impl(pattern, file_path, options);
     }
 
     return 0;
 }
+

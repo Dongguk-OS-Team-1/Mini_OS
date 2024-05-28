@@ -6,7 +6,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-void grep_impl(const char *pattern, const char *file_path, bool ignore_case, bool invert_match, bool show_line_numbers);
+void to_lowercase(char *str);
+void grep_impl(const char *pattern, const char *file_path, int options);
 int grep_(int argc, char *argv[]);
 
 #endif
