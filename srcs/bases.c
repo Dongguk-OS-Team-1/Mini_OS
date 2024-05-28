@@ -12,6 +12,7 @@
 #include "commands.h"
 
 int find_cmd(int size, char **cmd) {
+
     int is_user_exit;
 
     is_user_exit = 0;
@@ -38,6 +39,9 @@ int find_cmd(int size, char **cmd) {
         touch_(size, cmd);
     } else if (strcmp(cmd[0], FIND_CMD) == 0) {
         find_(size, cmd);
+    } else if (strcmp(cmd[0], ALIAS_CMD) == 0) {
+        printf("alias input\n");
+        alias_(size, cmd);
     } else if (strcmp(cmd[0], EXIT_CMD) == 0) {
         is_user_exit = 1;
     } else
@@ -69,14 +73,35 @@ void make_lower_case_word(char *target) {
         target++;
     }
 
-    return;
+    return ;
+}
+
+int init_log_alias_path(void) {
+
+    if (chdir("./resources") != 0) {
+        fprintf(stderr, "ERROR : Not Found resources directory.\n");
+        return (0);
+    }
+
+    getcwd(alias_path, sizeof(alias_path));
+    strncat(alias_path, ALIAS_FILE, sizeof(ALIAS_FILE));
+
+    getcwd(log_path, sizeof(log_path));
+    strncat(log_path, LOG_FILE, sizeof(LOG_FILE));
+
+    if (chdir("../") != 0) {
+         fprintf(stderr, "ERROR : Can not change directory.\n");
+        return (0);
+    }
+
+    return (1);
 }
 
 void init_1_dim_char(char *target, int size) {
     for (int i = 0; i < size; i++)
         *(target + i) = 0;
 
-    return;
+    return ;
 }
 
 void init_2_dim_char(char **target, int size) {
@@ -84,14 +109,14 @@ void init_2_dim_char(char **target, int size) {
     for (int i = 0; i < size; i++)
         *(target + i) = 0;
 
-    return;
+    return ;
 }
 
 void clear_buffer(void) {
 
     while (getchar() != '\n');
 
-    return;
+    return ;
 }
 
 int is_absolute_path(const char *path) {

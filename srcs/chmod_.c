@@ -1,82 +1,74 @@
-#include "chmod_.h"
+#include"chmod_.h"
 
-void print_usage(char *program_name) {
-    printf("Usage: %s <mode> <filename>\n", program_name);
-    printf("Modes: symbolic (e.g., u+rwx,g+rx,o-w) or numeric (e.g., 755)\n");
-}
+mode_t convert_mode_str_to_oct(const char *mode_str) {
+    char *endptr;
+    errno = 0;
+    long mode = strtol(mode_str, &endptr, 8);
 
-mode_t parse_symbolic_mode(char *mode_str) {
-    mode_t mode = 0;
-
-    while (*mode_str) {
-        switch (*mode_str++) {
-            case 'u':
-                mode |= S_IRUSR | S_IWUSR | S_IXUSR;
-                break;
-            case 'g':
-                mode |= S_IRGRP | S_IWGRP | S_IXGRP;
-                break;
-            case 'o':
-                mode |= S_IROTH | S_IWOTH | S_IXOTH;
-                break;
-            case 'a':
-                mode |= S_IRUSR | S_IWUSR | S_IXUSR |
-                        S_IRGRP | S_IWGRP | S_IXGRP |
-                        S_IROTH | S_IWOTH | S_IXOTH;
-                break;
-            case '+':
-                break;
-            case '-':
-                break;
-            case '=':
-                mode = 0;
-                break;
-            case 'r':
-                mode |= S_IRUSR | S_IRGRP | S_IROTH;
-                break;
-            case 'w':
-                mode |= S_IWUSR | S_IWGRP | S_IWOTH;
-                break;
-            case 'x':
-                mode |= S_IXUSR | S_IXGRP | S_IXOTH;
-                break;
-            default:
-                fprintf(stderr, "Invalid mode: %c\n", *(mode_str - 1));
-                exit(EXIT_FAILURE);
-        }
+    // strtol이 변환한 값이 유효한지 검사
+    if (errno != 0 || *endptr != '\0' || mode < 0 || mode > 07777) {
+        return (mode_t)-1; // 유효하지 않은 경우 -1 반환
     }
 
-    return mode;
-}
-
-mode_t parse_numeric_mode(char *mode_str) {
-    // strtol을 사용하여 mode_str을 정수로 변환
-    return (mode_t)strtol(mode_str, NULL, 8);
+    return (mode_t)mode;
 }
 
 int chmod_(int argc, char *argv[]) {
-    if (argc != 3) {
-        print_usage(argv[0]);
-        exit(EXIT_FAILURE);
+    if (argc < 3) {
+        printf("Error\n"); // 인자가 3개 입력되어야 하는데 적게 입력될 경우.
+        return -1;
     }
 
-    char *mode_str = argv[1];
-    char *file_name = argv[2];
-    mode_t mode;
-
-    // symbolic mode인지 numeric mode인지 확인
-    if (mode_str[0] == '-') {
-        mode = parse_numeric_mode(mode_str + 1);
-    } else {
-        mode = parse_symbolic_mode(mode_str);
+    struct stat file_stat;
+    if (stat(argv[2], &file_stat) == -1) {
+        printf("Can't access to %s\n", argv[2]); // argv[2] 이름의 파일이 존재하지 않으면 오류
+        return -1;
     }
 
-    if (chmod(file_name, mode) == -1) {
-        perror("chmod");
-        exit(EXIT_FAILURE);
-    }
+    mode_t new_mode = file_stat.st_mode;
+    if (argv[1][0] >= '0' && argv[1][0] <= '9') { // absolute mode
+        mode_t mode;
+        if ((mode = convert_mode_str_to_oct(argv[1])) == -1) {
+            fprintf(stderr, "Invalid parameter\n");
+            return -1;
+        }
 
-    printf("Permissions of '%s' changed successfully.\n", file_name);
+        if (chmod(argv[2], mode) == -1) {
+            perror("chmod");
+            return -1;
+        }
+    } else { // symbolic mode
+        char *token = strtok(argv[1], ", ");
+        while (token != NULL) {
+            char who = token[0];
+            char op = token[1];
+            for (int i = 2; token[i] != '\0'; i++) {
+                mode_t perm = 0;
+                switch (token[i]) {
+                    case 'r': perm = (who == 'u') ? S_IRUSR : (who == 'g') ? S_IRGRP : S_IROTH; break;
+                    case 'w': perm = (who == 'u') ? S_IWUSR : (who == 'g') ? S_IWGRP : S_IWOTH; break;
+                    case 'x': perm = (who == 'u') ? S_IXUSR : (who == 'g') ? S_IXGRP : S_IXOTH; break;
+                }
+
+                if (op == '+') {
+                    new_mode |= perm;
+                } else if (op == '-') {
+                    new_mode &= ~perm;
+                } else if (op == '=') {
+                    if (who == 'u') new_mode &= ~(S_IRUSR | S_IWUSR | S_IXUSR);
+                    else if (who == 'g') new_mode &= ~(S_IRGRP | S_IWGRP | S_IXGRP);
+                    else if (who == 'o') new_mode &= ~(S_IROTH | S_IWOTH | S_IXOTH);
+                    new_mode |= perm;
+                }
+            }
+            token = strtok(NULL, ", ");
+        }
+
+        if (chmod(argv[2], new_mode) == -1) {
+            perror("chmod");
+            return -1;
+        }
+    }
 
     return 0;
 }
