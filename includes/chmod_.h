@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
-mode_t convert_mode_str_to_oct(const char *mode_str);
+mode_t convert_mode_str_to_oct_chmod(const char *mode_str);
 int chmod_(int argc, char *argv[]);
 
 #endif
