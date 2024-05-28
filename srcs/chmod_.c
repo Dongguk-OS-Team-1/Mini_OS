@@ -1,6 +1,6 @@
 #include"chmod_.h"
 
-mode_t convert_mode_str_to_oct(const char *mode_str) {
+mode_t convert_mode_str_to_oct_chmod(const char *mode_str) {
     char *endptr;
     errno = 0;
     long mode = strtol(mode_str, &endptr, 8);
@@ -28,7 +28,7 @@ int chmod_(int argc, char *argv[]) {
     mode_t new_mode = file_stat.st_mode;
     if (argv[1][0] >= '0' && argv[1][0] <= '9') { // absolute mode
         mode_t mode;
-        if ((mode = convert_mode_str_to_oct(argv[1])) == -1) {
+        if ((mode = convert_mode_str_to_oct_chmod(argv[1])) == -1) {
             fprintf(stderr, "Invalid parameter\n");
             return -1;
         }
