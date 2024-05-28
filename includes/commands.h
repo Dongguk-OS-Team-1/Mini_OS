@@ -9,21 +9,20 @@
 /* ************************************************************************** */
 
 #ifndef COMMANDS_H
-
 # define COMMANDS_H
 
-
-void mkdir_(int argc, char *argv[]);
-void rmdir_(int argc, char *argv[]);
-int grep_(int argc, char *argv[]);
-int chmod_(int argc, char *argv[]);
-void cp_(char *source, char *destination);
-void touch_(int argc, char ** argv);
-void find_(int argc, char *argv[]);
-void cd_(int argc, char* argv[]);
+void  mkdir_(int argc, char *argv[]);
+void  rmdir_(int argc, char *argv[]);
+int   grep_(int argc, char *argv[]);
+int   chmod_(int argc, char *argv[]);
+void  cp_(char *source, char *destination);
+void  touch_(int argc, char *argv[]);
+void  find_(int argc, char *argv[]);
+void  cd_(int argc, char* argv[]);
 void  cat_(int argc, char* argv[]);
-void list_directory(int argc, char **argv);
-void cd_(int argc, char* argv[]);
+void  list_directory(int argc, char *argv[]);
+void  cd_(int argc, char* argv[]);
 void  cat_(int argc, char* argv[]);
+void  alias_(int argc, char *argv[]);
 
 #endif
