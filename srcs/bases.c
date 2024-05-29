@@ -40,7 +40,6 @@ int find_cmd(int size, char **cmd) {
     } else if (strcmp(cmd[0], FIND_CMD) == 0) {
         find_(size, cmd);
     } else if (strcmp(cmd[0], ALIAS_CMD) == 0) {
-        printf("alias input\n");
         alias_(size, cmd);
     } else if (strcmp(cmd[0], EXIT_CMD) == 0) {
         is_user_exit = 1;

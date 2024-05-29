@@ -33,6 +33,7 @@ void  rmdir_(int argc, char *argv[]) {
 
     // Initialize getopt's external variables
     optind = 1;
+    opterr = 1;
     optopt = '\0';
     optarg = NULL;
 
@@ -95,7 +96,7 @@ void  rmdir_(int argc, char *argv[]) {
                     if (res < 0)
                         success = 0;
                     else {
-                        FILE* dirFile = fopen("resources/log.txt", "a+");
+                        FILE* dirFile = fopen(log_path, "a+");
                         if (dirFile == NULL)
                             perror("can't open log.txt");
                         else
@@ -114,35 +115,14 @@ void  rmdir_(int argc, char *argv[]) {
     return ;
 }
 
-/**
- *  Builds directories based on the given path.
- *
- *  Inputs:
- *      char *path_org
- *          The path where directories will be created.
- *
- *  Returns:
- *      Returns 1 if the directories are created successfully.
- *      Returns 0 if an error occurs during the creation of directories.
- *
- *  Notes:
- *      - This function creates directories based on the given path.
- *      - The 'path_org' parameter indicates the path where directories will be created.
- *      - The 'mode' parameter specifies the file permission mode for the directories.
- *      - If intermediate directories in the path do not exist, they will be created.
- *      - If the path already exists as a directory, an error message will be printed.
- */
 int collapse_dir(char *path_org, char *target) {
 
-    // path_stat : is structure to store file/directory information
-    // struct stat path_stat;
     // dirfd : is file descriptor for the directory.
     int         dirfd;
     // Pointers to manipulate the path string
     char        *path, *end_path_org, *temp;
     // res : is syscall function's return value
     int         res;
-    // char *dir_name;
     const int   len_path_org = strlen(path_org);
     const int   len_target = strlen(target);
     int         i;
@@ -154,13 +134,13 @@ int collapse_dir(char *path_org, char *target) {
     else
         return (0);
 
-    if (len_path_org < len_target) // Need ERROR SETTING
+    if (len_path_org < len_target)
         return (0);
 
     i = len_path_org - 1;
     j = len_target - 1;
     for ( ; j >= 0; i--, j--)
-        if (path_org[i] != target[j]) // Need ERROR SETTING
+        if (path_org[i] != target[j])
             return (0);
     end_path_org = path_org + i;
 
@@ -178,7 +158,7 @@ int collapse_dir(char *path_org, char *target) {
         if ((res = syscall(SYS_rmdir, path_org)) != 0)
             return (0);
 
-        FILE* dirFile = fopen("resources/log.txt", "a+");
+        FILE* dirFile = fopen(log_path, "a+");
         if (dirFile == NULL)
             perror("can't open log.txt");
         else
@@ -189,37 +169,6 @@ int collapse_dir(char *path_org, char *target) {
     return (1);
 }
 
-/**
- *  Builds multiple directories with a brace pattern.
- *  The function creates directories based on the given brace pattern
- *  and a range of numbers.
- *
- *  Inputs:
- *      char  *real_path
- *         The path where the directories will be created.
- *
- *      int find_dirname
- *         The index of the directory name in the 'real_path' string.
- *
- *      int start
- *          The starting number of the range for creating directories.
- *
- *      int end
- *          The ending number of the range for creating directories.
- *
- *  Return:
- *      Returns 1 if the directories are created successfully.
- *      Returns 0 if an error occurs during the creation of directories.
- *
- *  Notes:
- *      - The function uses a brace pattern and a range of numbers to create multiple directories.
- *      - The 'mode' parameter specifies the file permission mode for the directories.
- *      - The 'real_path' parameter indicates the path where the directories will be created.
- *      - The 'find_dirname' parameter is the index of the directory name in the 'real_path' string.
- *      - The 'start' and 'end' parameters define the range of numbers for creating directories.
- *      - The function creates directories in parallel using multiple threads.
- *      - The function returns 0 if the range of numbers is invalid or if an error occurs during directory creation.
- */
 int collapse_brace_dir(char *real_path, int find_dirname, int start, int end) {
 
     char  dir_name[MAX];
@@ -269,7 +218,7 @@ int collapse_brace_dir(char *real_path, int find_dirname, int start, int end) {
             perror("Failed to join thread");
             return (0);
         } else {
-            FILE* dirFile = fopen("resources/log.txt", "a+");
+            FILE* dirFile = fopen(log_path, "a+");
             if (dirFile == NULL)
                 perror("can't open log.txt");
             else
@@ -328,12 +277,12 @@ void print_log_rmdir(FILE *dirFile, char *dir_name) {
     fclose(dirFile);
 
     if (!nameExists) {
-        dirFile = fopen("resources/log.txt", "a");
+        dirFile = fopen(log_path, "a");
         if (dirFile == NULL) {
             perror("can't open log.txt");
             return ;
         }
-        fprintf(dirFile, "d %s\n", dir_name);
+        fprintf(dirFile, "- d %s\n", dir_name);
         fclose(dirFile);
     }
 
