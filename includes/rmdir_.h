@@ -30,4 +30,6 @@ typedef struct  s_thread_args {
 
 int find_brace_pattern(char *target, int *start, int *end);
 
+extern char log_path[PATH_MAX];
+
 #endif

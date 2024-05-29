@@ -39,6 +39,7 @@ void  mkdir_(int argc, char *argv[]) {
     
     // Initialize getopt's external variables
     optind = 1;
+    opterr = 1;
     optopt = '\0';
     optarg = NULL;
     // Initialize mode variables
@@ -120,7 +121,7 @@ void  mkdir_(int argc, char *argv[]) {
                         if (v_flag)
                             printf("%s/%s\n", real_path, real_path + i);
                         
-                        FILE* dirFile = fopen("resources/log.txt", "a+");
+                        FILE* dirFile = fopen(log_path, "a+");
                         if (dirFile == NULL)
                             perror("can't open log.txt");
                         else
@@ -330,7 +331,7 @@ int build_brace_dir(mode_t mode, char *real_path, int find_dirname, int start, i
         } else {
             if (v_flag)
                 printf("%s/%s\n", real_path, thread_args[j].dir_name);
-            FILE* dirFile = fopen("resources/log.txt", "a+");
+            FILE* dirFile = fopen(log_path, "a+");
             if (dirFile == NULL)
                 perror("can't open log.txt");
             else
@@ -419,12 +420,12 @@ void print_log(FILE *dirFile, char *dir_name) {
     fclose(dirFile);
 
     if (!nameExists) {
-        dirFile = fopen("resources/log.txt", "a");
+        dirFile = fopen(log_path, "a");
         if (dirFile == NULL) {
             perror("can't open log.txt");
             return ;
         }
-        fprintf(dirFile, "d %s\n", dir_name);
+        fprintf(dirFile, "+ d %s\n", dir_name);
         fclose(dirFile);
     }
     

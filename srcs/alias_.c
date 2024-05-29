@@ -120,7 +120,7 @@ int add_alias(char *target) {
         return (0);
     }
 
-    fprintf(alias_file, "\n%s", target);
+    fprintf(alias_file, "%s\n", target);
 
     fclose(alias_file);
 
